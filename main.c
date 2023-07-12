@@ -10,6 +10,7 @@
 # define RED	0XF51313
 # define LILAC	0x8C1DEE
 # define BLACK	0x000000
+# define GRAY	0x726E6E
 
 struct s_data{
 	int		width;
@@ -32,6 +33,7 @@ struct s_image{
 	int (*calc_x)(int);
 	int (*calc_y)(int);
 } image;
+struct s_image img;
 
 struct s_player
 {
@@ -46,11 +48,19 @@ struct s_player
 	int 	size;
 } player;
 
+struct s_raycast_wall{
+	int x;
+	int y;
+	int ray_len;
+};
+
+struct s_raycast_wall raycast[60];
+
 
 int map[] = {
 	1, 1, 1, 1, 1, 1,
 	1, 0, 1, 0, 0, 1,
-	1, 0, 1, 0, 0, 1,
+	1, 0, 0, 0, 1, 1,
 	1, 0, 1, 0, 0, 1,
 	1, 0, 0, -1, 0, 1,
 	1, 0, 0, 0, 0, 1,
@@ -60,6 +70,7 @@ int map[] = {
 
 void move(int x, int y);
 void map_init(int x, int y);
+void map_init_3D(int x, int y, struct s_image img);
 
 int	calc_x(int index){
 	return ((index % 6) * data.units);
@@ -82,7 +93,7 @@ void	init_data(){
 	data.width *= data.units, data.height *= data.units;
 	printf("width: %d height: %d\n", data.width, data.height);
 	data.mlx = mlx_init();
-	data.win = mlx_new_window(data.mlx, data.width, data.height, "hi");
+	data.win = mlx_new_window(data.mlx, data.width*2, data.height, "hi");
 	image.image = mlx_new_image(data.mlx, data.width, data.height);
 	image.buffer = mlx_get_data_addr(image.image, &(image.bits_per_pixel), &(image.size_line), &(image.endian));
 	image.calc_y = &calc_y;
@@ -104,13 +115,13 @@ int keyboard(int keycode, void *n)
 	int x = player.x, y = player.y;
 	if (keycode == 119 || keycode == 13){
 		printf("W tuşuna basıldı.\n");
-		y += player.delta_y;
-		x += player.delta_x;
+		y += player.delta_y*2;
+		x += player.delta_x*2;
 	}
 	else if (keycode == 115 || keycode == 1){
 		printf("S tuşuna basıldı.\n");
-		y -= player.delta_y;
-		x -= player.delta_x;
+		y -= player.delta_y*2;
+		x -= player.delta_x*2;
 	}
 	else if (keycode == 100 || keycode == 2){
 		printf("D tuşuna basıldı.\n");
@@ -153,31 +164,23 @@ int keyboard(int keycode, void *n)
 		player.delta_y = sin(player.alpha);
 	}
 	map_init(x, y);
+	map_init_3D(x, y, img);
 	return (0);
 }
 
 
-void my_mlx_pixel_put(int x, int y, int color){
-	char *dst = image.buffer + (y * image.size_line + x * (image.bits_per_pixel / 8));
+void my_mlx_pixel_put(int x, int y, int color, struct s_image img){
+	char *dst = img.buffer + (y * img.size_line + x * (img.bits_per_pixel / 8));
 	*(unsigned int*)dst = color;
 }
 
-void put_image(int begin_x, int begin_y, int end_x, int end_y, int color){
+void put_image(int begin_x, int begin_y, int end_x, int end_y, int color, struct s_image img){
 	for (int y = begin_y; y < end_y; y++)
 	for (int x = begin_x; x < end_x; x++)
 	{
-		my_mlx_pixel_put(x, y, color);
+		my_mlx_pixel_put(x, y, color, img);
 	}
 	
-}
-
-void move(int x, int y){
-	// if (map[image.calc_x(x) / 128 + (image.calc_y(y) * 6)] == 1){
-	// 	printf("ok\n");
-	// 	return;
-	// }
-	put_image(player.x, player.y, x, y, RED);
-	player.x = x; player.y;
 }
 
 void draw(int beginX, int beginY, int endX, int endY, int color){
@@ -190,7 +193,7 @@ void draw(int beginX, int beginY, int endX, int endY, int color){
 	double pixelY = beginY;
 	while (pixels)
 	{
-		my_mlx_pixel_put(pixelX, pixelY, color);
+		my_mlx_pixel_put(pixelX, pixelY, color, image);
 		pixelX += deltaX;
 		pixelY += deltaY;
 		--pixels;
@@ -216,7 +219,7 @@ void DDA(int X0, int Y0, int X1, int Y1, int color)
     float X = X0;
     float Y = Y0;
     for (int i = 0; i <= steps; i++) {
-        my_mlx_pixel_put(round(X), round(Y), color); // put pixel at (X,Y)
+        my_mlx_pixel_put(round(X), round(Y), color, image); // put pixel at (X,Y)
         X += Xinc; // increment in x at each step
         Y += Yinc; // increment in y at each step // for visualization of line-       // generation step by step
     }
@@ -225,26 +228,37 @@ void DDA(int X0, int Y0, int X1, int Y1, int color)
 void put_apect(){
 	float begin_x = player.x;
 	float begin_y = player.y;
-	float end_x;
-	float end_y;
-	float m_0 = abs(begin_x - end_x);
-	float m_1 = abs(begin_y - end_y);
-	player.diagonal = pow(data.width, 2) + pow(data.height, 2);
-	player.diagonal = sqrt(player.diagonal);
-	player.m = m_0 >= m_1 ? m_0 / m_1 : m_1 / m_0;
-	for (size_t i = 1; i < 10000; i++)
-	{
-		end_x = player.x + (player.delta_x * i);
-		end_y = player.y + (player.delta_y * i);
-		int index = ((int)end_x / 128) + (((int)end_y / 128) * 6);
-		if (map[index] == 1){
-			printf("index:%d, x:%f, y:%f\n", index, (end_x / 128), ((end_y / 128) * 6));
-			break;
-		}
+	float dx = player.delta_x * 20;
+	float dy = player.delta_y * 20;
+	float end_x = begin_x + dx * 20;
+	float end_y = begin_y + dy * 20;
+	float newo = player.alpha;
+	newo -= 30 * 0.0174533;
+	if (newo < 0){
+		newo += 2*PI;
 	}
-	DDA(begin_x, begin_y, end_x, end_y, GREEN);
-	printf("begin_x: %f, begin_y: %f, end_x: %f, end_y: %f, m:%f\n", begin_x, begin_y, end_x, end_y, player.m);
-	// printf("%d:%d\n", end_wall_x(begin_x, begin_y), end_wall_y(begin_x, begin_y));
+	dx = cos(newo)*5;
+	dy = sin(newo)*5;
+	for (size_t j = 0; j < 60; j++)
+	{
+		for (size_t i = 1; i < 10000; i++)
+		{
+			end_x = player.x + (dx * i);
+			end_y = player.y + (dy * i);
+			int index = ((int)end_x / 128) + (((int)end_y / 128) * 6);
+			if (map[index] == 1){
+				printf("index:%d, x:%f, y:%f\n", index, (end_x / 128), ((end_y / 128) * 6));
+				break;
+			}
+		}
+		raycast[j].x = end_x;
+		raycast[j].y = end_y;
+		raycast[j].ray_len = end_x - end_y - begin_x - begin_y;
+		DDA(begin_x, begin_y, end_x, end_y, GREEN);
+		newo += 0.0174533;
+		dx = cos(newo)*5;
+		dy = sin(newo)*5;
+	}
 }
 
 void map_init(int x, int y){
@@ -257,12 +271,12 @@ void map_init(int x, int y){
 	while(i < data.size)
 	{
 		if (map[i] == 1){
-			put_image(image.calc_x(i), image.calc_y(i), image.calc_x(i) + data.units, image.calc_y(i) + data.units, LILAC);
+			put_image(image.calc_x(i), image.calc_y(i), image.calc_x(i) + data.units, image.calc_y(i) + data.units, LILAC, image);
 		}else{
-			put_image(image.calc_x(i), image.calc_y(i), image.calc_x(i) + data.units, image.calc_y(i) + data.units, WHITE);
+			put_image(image.calc_x(i), image.calc_y(i), image.calc_x(i) + data.units, image.calc_y(i) + data.units, WHITE, image);
 		}
-		put_image(image.calc_x(i), image.calc_y(i), image.calc_x(i) + data.units, image.calc_y(i) + 3, BLACK);
-		put_image(image.calc_x(i), image.calc_y(i), image.calc_x(i) + 3, image.calc_y(i) + data.units, BLACK);
+		put_image(image.calc_x(i), image.calc_y(i), image.calc_x(i) + data.units, image.calc_y(i) + 3, BLACK, image);
+		put_image(image.calc_x(i), image.calc_y(i), image.calc_x(i) + 3, image.calc_y(i) + data.units, BLACK, image);
 		i++;
 	}
 	printf("x: %d, y: %d\n", x, y);
@@ -272,6 +286,29 @@ void map_init(int x, int y){
 	put_apect();
 	printf("%d\n", i);
 	mlx_put_image_to_window(data.mlx, data.win, image.image, 0, 0);
+}
+
+void put_wall(int x, int y, struct s_image img){
+
+	printf("x:%d, y:%d\n",x,y);
+	int height = data.height / 2;
+	int width = (data.width / 2) * 3;
+	for (size_t i = 0; i < 60; i++)
+	{
+		put_image(width + i * 0.174533, height - abs(raycast[i].ray_len) * (0.174533 / 2), width + 128, height + abs(raycast[i].ray_len) * (0.174533 / 2), BLACK, img);
+		printf("raylen: %d\n",raycast[i].ray_len);
+	}
+}
+
+void map_init_3D(int x, int y, struct s_image img){
+	int i = 0;
+	printf("x:%d, y:%d\n", x, y);
+	put_image(x, 0, x + data.width, data.height / 2, GRAY, img);
+	put_image(x, data.height / 2, x + data.width, data.height, GREEN, img);
+	put_wall(x, y, img);
+	// put_wall(x, y, img);
+	// put_image(x - (data.units / 2), y + (data.units / 2), x + (data.units / 2), y + (data.units / 2) * 2, RED, img);
+	mlx_put_image_to_window(data.mlx, data.win, img.image, data.width, 0);
 }
 
 int player_loca(){
@@ -284,7 +321,12 @@ int player_loca(){
 
 int main(){
 	init_data();
+	img.image = mlx_new_image(data.mlx, data.width, data.height);
+	img.buffer = mlx_get_data_addr(img.image, &(img.bits_per_pixel), &(img.size_line), &(img.endian));
+	img.calc_x = &calc_x;
+	img.calc_y = &calc_y;
 	map_init(image.calc_x(player_loca()), image.calc_y(player_loca()));
+	map_init_3D(data.width, data.height, img);
 	mlx_hook(data.win, 2, 1L << 0, keyboard, &data);
 	mlx_hook(data.win, 17, 0, shutdown, &data);	
 	// exit(1);
