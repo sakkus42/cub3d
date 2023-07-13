@@ -5,6 +5,7 @@
 #include "mlx/mlx.h"
 
 # define PI		3.14159265
+# define R_D	0.0174533
 # define GREEN	0x25bc17
 # define WHITE	0xffffff
 # define RED	0XF51313
@@ -293,18 +294,21 @@ void put_wall(int x, int y, struct s_image img){
 	printf("x:%d, y:%d\n",x,y);
 	int height = data.height / 2;
 	int width = (data.width / 2) * 3;
+	int diagonal = sqrt(pow(data.width, 2) + pow(data.height, 2));
 	for (size_t i = 0; i < 60; i++)
 	{
-		put_image(width + i * 0.174533, height - abs(raycast[i].ray_len) * (0.174533 / 2), width + 128, height + abs(raycast[i].ray_len) * (0.174533 / 2), BLACK, img);
-		printf("raylen: %d\n",raycast[i].ray_len);
+		int calc = abs(diagonal / (raycast[i].ray_len * R_D));
+		printf("calc:%d\n", calc);
+		put_image(width, height - calc, width + (data.width ), height + calc, RED, img);
+		width += 60;
 	}
 }
 
 void map_init_3D(int x, int y, struct s_image img){
 	int i = 0;
 	printf("x:%d, y:%d\n", x, y);
-	put_image(x, 0, x + data.width, data.height / 2, GRAY, img);
-	put_image(x, data.height / 2, x + data.width, data.height, GREEN, img);
+	put_image(data.width, 0, data.width + data.width, data.height / 2, GRAY, img);
+	put_image(data.width, data.height / 2, data.width + data.width, data.height, GREEN, img);
 	put_wall(x, y, img);
 	// put_wall(x, y, img);
 	// put_image(x - (data.units / 2), y + (data.units / 2), x + (data.units / 2), y + (data.units / 2) * 2, RED, img);
