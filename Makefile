@@ -6,27 +6,23 @@ GNL			= gnl/gnl.a
 
 MLX			= mlx/libmlx.a
 
-SRCS		= main.c check_map.c check_main.c
+SRCS		= main.c check_map.c check_main.c init_data.c put_image.c init_map_utils.c init_map.c raycast_utils.c
 
 COMPILER	= gcc
 
-FLAGS		=  -lXext -lX11 -lm -lz
+FLAGS		= -g -Wall -Wextra -Werror -framework OpenGL -framework AppKit
 
-$(ZORT)	:
-		make -C gnl/
-		make -C libft/
-		make -C mlx/
-		
-$(NAME)	: $(LIBFT) $(GNL) $(SRCS)
+all : $(ZORT) $(NAME)
+
+$(NAME)	: $(LBFT) $(GNL) $(SRCS)
 		$(COMPILER) $(SRCS) $(MLX) $(LBFT) $(GNL) $(FLAGS) -o $(NAME)
 
-$(GNL) :
-		make -C gnl/
+$(LBFT):
+		make -C libft
 
-$(LBFT) :
-		make -C libft/
-
-all : $(NAME)
+$(GNL):
+		make -C gnl
+		
 
 clean :
 		rm -rf $(NAME)
