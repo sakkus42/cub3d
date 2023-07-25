@@ -1,4 +1,16 @@
-# ifndef CUB3D_H
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cub3d.h                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakkus <sakkus@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/07/25 17:56:13 by anargul           #+#    #+#             */
+/*   Updated: 2023/07/25 19:11:24 by sakkus           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef CUB3D_H
 # define CUB3D_H
 
 # include <stdlib.h>
@@ -10,7 +22,6 @@
 # include "mlx/mlx.h"
 # include "gnl/get_next_line.h"
 # include "libft/libft.h"
-
 
 typedef struct s_ray
 {
@@ -31,6 +42,7 @@ typedef struct s_ray
 	int	line_height;
 	int	draw_start;
 	int	draw_end;
+	int	pitch;
 }t_ray;
 
 typedef struct s_texture
@@ -43,6 +55,13 @@ typedef struct s_texture
 	int		text_y;
 } t_texture;
 
+typedef struct s_put
+{
+	int color;
+	int start;
+	int end;
+	int x;
+}				t_put;
 enum	e_dir
 {
 	NORTH,
@@ -81,6 +100,10 @@ typedef struct s_map
 	int					p_y;
     int     			f[3];
     int     			c[3];
+	int					frgb;
+	int					crgb;
+	int					player_direction;
+	int					error_value;
 }       t_map;
 
 typedef struct s_image
@@ -103,6 +126,7 @@ typedef struct s_player
     double plane_x;
     double plane_y; //the 2d raycaster version of camera plane
     double speed;
+	double direction;
 }				t_player;
 
 typedef struct s_win
@@ -122,14 +146,32 @@ typedef	struct s_data
 	t_image		*walls;
 	void		*mlx;
 	char		**map;
-}t_data;
+}				t_data;
 
+void	ft_error_2(int error, char **tmp);
+int		ft_id_is_true(int id, t_map *main_s);
+int		ft_id_is_true_extra(int id, t_map *main_s);
+int		ft_which_id(char *id);
+char	*ft_edit_nl(char *path);
+int		ft_ids_are_ok(t_map *main_s);
+int		ft_is_valid_path(char *path);
+void	ft_spec_tmp_free(char **tmp);
+void	ft_fill_the_rgb_f(int r, int g, int b, t_map *main_s);
+void	ft_fill_the_rgb_c(int r, int g, int b, t_map *main_s);
+int		ft_check_and_fill_maptocheck(int y, int map_start, char *line);
+int		ft_check_after(t_map *main_s);
+int		ft_check_and_fill_player(t_map *main_s);
+int		ft_check_and_fill_player_extra(bool *flag, t_map *main_s, int i, int j);
+int		ft_check_and_fill_maptofill(char *line, t_map *main_s);
+void	ft_find_x_y(int j, t_map *main_s);
+int		ft_check_and_fill_map(int map_start, t_map *main_s);
+char	**ft_read_map(char *file_name);
 int     ft_check_management(char *first_taken_map, t_map *main_s);
 int     ft_is_ok_ids(t_map *main_s);
 int     check_main(char **av, t_map *main_s);
 void	init_data(t_map *map, t_data *data);
-void	put_image(int x, int start, int end, int color, t_image *img);
-int image_color(int x, int y, t_image *img);
+int 	image_color(int x, int y, t_image *img);
+size_t	ft_strlen_modded(const char *s);
 void	put_cle_floo(t_data *data);
 double	is_zero(double x);
 void	init_map(t_data *data);
@@ -137,4 +179,12 @@ void	start_end_calc(t_ray *ray, int height);
 void	dda(t_ray *ray, char **map);
 void	step_calc(t_player *player, t_ray *ray);
 void	init_ray(int x, t_data *data, t_ray *ray);
-# endif
+void	ft_rgb_convert(t_map *map);
+void	calc_rot(t_data *data, double rot_speed);
+void	ft_error(int error);
+void	free_wall_name(t_map *map);
+int		ft_is_rgb(int id, char *rgb, t_map *main_s);
+void	put_image(t_put *put, t_image *img);
+void	get_dir(t_player *player);
+
+#endif

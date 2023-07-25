@@ -1,9 +1,9 @@
-EA textures/wall1.xpm
-NO textures/wall2.xpm
-SO textures/wall3.xpm
-WE textures/wall4.xpm
+EA textures/beko.xpm
+NO textures/malatia.xpm
+SO textures/maykil.xpm
+WE textures/suliman.xpm
 
-F 200,200,200
+F 200,200,0
 C 200,200,200
 
 
@@ -12,8 +12,8 @@ C 200,200,200
 100000000001
 100000000001
 100000000001
+100001000001
 100000000001
-100000000001
-100000000001
-10000W000001
+101001000001
+10001W000001
 111111111111

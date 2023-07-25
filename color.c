@@ -1,33 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   put_image.c                                        :+:      :+:    :+:   */
+/*   color.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sakkus <sakkus@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/25 11:58:50 by sakkus            #+#    #+#             */
-/*   Updated: 2023/07/25 19:10:00 by sakkus           ###   ########.fr       */
+/*   Created: 2023/07/25 11:38:19 by sakkus            #+#    #+#             */
+/*   Updated: 2023/07/25 11:38:20 by sakkus           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
 
-void	my_mlx_pixel_put(int x, int y, int color, t_image *img)
+int	create_trgb(int t, int r, int g, int b)
 {
-	char	*dst;
-
-	dst = img->buffer + (y * img->size_line + x * (img->bbp / 8));
-	*(unsigned int *)dst = color;
+	return (t << 24 | r << 16 | g << 8 | b);
 }
 
-void	put_image(t_put *put, t_image *img)
+void	ft_rgb_convert(t_map *map)
 {
-	int	start;
-
-	start = put->start;
-	while (start < put->end)
-	{
-		my_mlx_pixel_put(put->x, start, put->color, img);
-		start++;
-	}
+	map->frgb = create_trgb(0, map->f[0], map->f[1], map->f[2]);
+	map->crgb = create_trgb(0, map->c[0], map->c[1], map->c[2]);
 }
