@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_dir.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakkus <sakkus@student.42.fr>              +#+  +:+       +#+        */
+/*   By: anargul <anargul@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 19:08:14 by sakkus            #+#    #+#             */
-/*   Updated: 2023/07/26 18:15:40 by sakkus           ###   ########.fr       */
+/*   Updated: 2023/07/28 13:28:40 by anargul          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,13 +36,13 @@ void	get_dir(t_player *player)
 		player->dir_x = 1;
 		player->dir_y = 0;
 		player->plane_x = 0;
-		player->plane_y = -0.66;
+		player->plane_y = 0.66;
 	}
 	else if (player->direction == 'W')
 	{
 		player->dir_x = -1;
 		player->dir_y = 0;
 		player->plane_x = 0;
-		player->plane_y = 0.66;
+		player->plane_y = -0.66;
 	}
 }

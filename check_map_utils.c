@@ -6,7 +6,7 @@
 /*   By: sakkus <sakkus@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 17:10:03 by anargul           #+#    #+#             */
-/*   Updated: 2023/07/28 12:12:18 by sakkus           ###   ########.fr       */
+/*   Updated: 2023/07/28 15:45:37 by sakkus           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,8 @@ void	ft_error(int error)
 		printf("Wall Error!\n");
 	else if (error == 8)
 		printf("Unknown Character!\n");
+	else if (error == 9)
+		printf("Invalid Path Extension!\n");
 	exit(1);
 }
 
