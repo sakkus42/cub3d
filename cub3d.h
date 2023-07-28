@@ -6,7 +6,7 @@
 /*   By: sakkus <sakkus@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 17:56:13 by anargul           #+#    #+#             */
-/*   Updated: 2023/07/28 11:14:41 by sakkus           ###   ########.fr       */
+/*   Updated: 2023/07/28 13:01:30 by sakkus           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,6 @@
 # include "mlx/mlx.h"
 # include "gnl/get_next_line.h"
 # include "libft/libft.h"
-
-# define CLE_COLOR 0x993333
-# define WALL_COLOR 0x999999
-# define PLAYER_COLOR 0xFFFFFF
 
 typedef struct s_mini_map
 {
