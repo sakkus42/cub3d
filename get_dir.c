@@ -6,7 +6,7 @@
 /*   By: sakkus <sakkus@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 19:08:14 by sakkus            #+#    #+#             */
-/*   Updated: 2023/07/25 19:08:48 by sakkus           ###   ########.fr       */
+/*   Updated: 2023/07/26 18:15:40 by sakkus           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	get_dir2(t_player *player)
 {
 	player->dir_x = 0;
 	player->dir_y = -1;
-	player->plane_x = -0.66;
+	player->plane_x = 0.66;
 	player->plane_y = 0;
 }
 
@@ -28,7 +28,7 @@ void	get_dir(t_player *player)
 	{
 		player->dir_x = 0;
 		player->dir_y = 1;
-		player->plane_x = 0.66;
+		player->plane_x = -0.66;
 		player->plane_y = 0;
 	}
 	else if (player->direction == 'E')

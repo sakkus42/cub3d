@@ -6,7 +6,7 @@
 /*   By: anargul <anargul@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 16:52:34 by anargul           #+#    #+#             */
-/*   Updated: 2023/07/25 17:54:46 by anargul          ###   ########.fr       */
+/*   Updated: 2023/07/28 01:17:18 by anargul          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,10 @@ int	ft_check_and_fill_maptocheck(int y, int map_start, char *line)
 	{
 		c = line[i];
 		if (y == map_start && c != '1' && c != ' ')
-			exit (1);
+			return (1);
 		if (!(c == 'N' || c == 'S' || c == 'W'
 				|| c == 'E' || c == '1' || c == '0' || c == ' '))
-			exit (2);
+			return (1);
 		i++;
 	}
 	return (0);
@@ -37,7 +37,7 @@ int	ft_check_and_fill_maptofill(char *line, t_map *main_s)
 	char		c;
 	static int	z;
 
-	main_s->original_map[z] = malloc(sizeof(char) * (main_s->map_infos.x + 1));
+	main_s->original_map[z] = malloc(sizeof(char) * (main_s->map_infos.x));
 	i = 0;
 	while (i < main_s->map_infos.x)
 	{
@@ -51,29 +51,29 @@ int	ft_check_and_fill_maptofill(char *line, t_map *main_s)
 	}
 	main_s->original_map[z][i] = '\0';
 	z++;
-	return (1);
+	return (0);
 }
 
 int	ft_check_after(t_map *main_s)
 {
 	int		i;
 	int		j;
-	char	c;
 
 	i = 0;
 	while (main_s->original_map[i])
 	{
 		j = 0;
-		while (main_s->original_map[i][j])
+		while (main_s->original_map[i][j] != '\0')
 		{
-			c = main_s->original_map[i][j];
-			if (i == 0 && c != '1')
+			if (i == 0 && main_s->original_map[i][j] != '1')
 				return (6);
-			else if (i == main_s->map_infos.y - 1 && c != '1')
+			else if (i == main_s->map_infos.y - 1
+				&& main_s->original_map[i][j] != '1')
 				return (6);
-			else if (j == 0 && c != '1')
+			else if (j == 0 && main_s->original_map[i][j] != '1')
 				return (6);
-			else if (j == main_s->map_infos.x - 1 && c != '1')
+			else if (j == main_s->map_infos.x - 1
+				&& main_s->original_map[i][j] != '1')
 				return (6);
 			j++;
 		}

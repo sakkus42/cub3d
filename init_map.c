@@ -6,7 +6,7 @@
 /*   By: sakkus <sakkus@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 11:52:14 by sakkus            #+#    #+#             */
-/*   Updated: 2023/07/25 13:39:57 by sakkus           ###   ########.fr       */
+/*   Updated: 2023/07/28 11:07:37 by sakkus           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	init_texture(t_texture *text, t_ray *ray, t_player *player, int height)
 	if (ray->side == 1 && ray->ray_dir_y < 0)
 		text->text_x = 64 - text->text_x - 1;
 	text->step = 1.0 * 64 / ray->line_height;
-	text->tex_pos = (ray->draw_start - height / 2 + ray->line_height / 2)
+	text->tex_pos = (ray->draw_start - 100 - height / 2 + ray->line_height / 2)
 		* text->step;
 }
 
@@ -82,11 +82,21 @@ void	raycasting(t_data *data, t_win *win, t_player *player)
 	}
 }
 
+void	mini_put(int units, t_put *put, t_image *img)
+{
+	int	i;
+
+	i = 0;
+	while (i < units)
+	{
+		put_image(put, img);
+		put->x++;
+		i++;
+	}
+}
+
 void	init_map(t_data *data)
 {
-	int			x;
-
-	x = 0;
 	mlx_clear_window(data->mlx, data->win->win_addres);
 	put_cle_floo(data);
 	raycasting(data, data->win, data->player);
